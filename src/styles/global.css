@@ -49,6 +49,7 @@ body {
   color: var(--ink);
   font-family: var(--sans);
   font-size: 1.1875rem;
+  font-weight: 500;
   line-height: 1.35;
   caret-color: var(--rose);
   -webkit-font-smoothing: antialiased;
