@@ -72,6 +72,8 @@ Poné `"destacado": true`. En la home, los dos primeros destacados aparecen pega
 
 Si la foto todavía no está, el producto se muestra igual con el logo en lugar de la foto.
 
+Junto a cada foto del catálogo hay un archivo `.json` con el mismo nombre (por ejemplo `lip-oil.webp.json`). Solo anota de qué página del PDF salió la foto. Para las fotos nuevas no hace falta crearlo.
+
 ### Sacar un producto
 
 Borrá su bloque completo, desde `{` hasta `},`. Revisá que no quede una coma suelta antes del `]` final.
