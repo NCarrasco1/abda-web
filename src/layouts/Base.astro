@@ -270,4 +270,22 @@ const ruta = Astro.url.pathname;
       display: inline-flex;
     }
   }
+
+  /* Celular apaisado: el botón queda como un círculo para no tapar los filtros. */
+  @media (max-height: 500px) {
+    .flotante {
+      left: auto;
+      width: 54px;
+      padding: 0;
+    }
+
+    .flotante span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
 </style>
