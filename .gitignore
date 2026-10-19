@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.impeccable/live/
+.impeccable/config.local.json
+.env
+
+# El catálogo original pesa 34 MB y no hace falta para publicar el sitio.
+*.pdf
