@@ -3,6 +3,10 @@ import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import Icon from '../components/Icon.astro';
 import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
+
+// Pocas inclinaciones medidas y cintas variadas: la pared, pero ordenada para recorrer.
+const inclinaciones = [-1, 0.8, 0.4, -0.6, 1, -0.4, 0.6, -0.8];
+const cintas = [3, -4, 5, -2, 2, -5, 4, -3, 1];
 ---
 
 <Base
@@ -11,7 +15,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
 >
   <header class="encabezado wrap">
     <h1 class="script">Catálogo</h1>
-    <p class="caps resumen">{productos.length} productos · {categorias.length} categorías</p>
+    <p class="caps resumen"><span>{productos.length} productos</span> <span>{categorias.length} categorías</span></p>
   </header>
 
   <div class="filtros">
@@ -20,7 +24,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
         <a href="#todo" data-cat="todo" aria-current="true" class="caps">Todo</a>
         {categorias.map((c) => <a href={`#${c.id}`} data-cat={c.id} class="caps">{c.nombre}</a>)}
       </nav>
-      <div class="herramientas" hidden>
+      <div class="herramientas">
         <label class="buscar">
           <Icon name="search" />
           <span class="visually-hidden">Buscar por nombre</span>
@@ -35,6 +39,8 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     </div>
   </div>
 
+  <noscript><style>.herramientas { display: none; }</style></noscript>
+
   <div class="wrap listado">
     <p class="estado" aria-live="polite"></p>
 
@@ -44,11 +50,16 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
         return (
           <section id={c.id} class="grupo" data-cat={c.id} aria-labelledby={`t-${c.id}`}>
             <h2 id={`t-${c.id}`} class="caps">
-              {c.nombre} <span>{lista.length}</span>
+              {c.nombre} <span>{lista.length}<span class="visually-hidden"> productos</span></span>
             </h2>
             <div class="grilla">
-              {lista.map((p) => (
-                <ProductCard producto={p} transicion sizes="(min-width: 1000px) 250px, (min-width: 640px) 30vw, 45vw" />
+              {lista.map((p, i) => (
+                <ProductCard
+                  producto={p}
+                  tilt={inclinaciones[i % inclinaciones.length]}
+                  cinta={cintas[(i + c.id.length) % cintas.length]}
+                  transicion
+                  sizes="(min-width: 1000px) 250px, (min-width: 640px) 30vw, 45vw" />
               ))}
             </div>
           </section>
@@ -70,15 +81,14 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
 
   const chips = [...document.querySelectorAll<HTMLAnchorElement>('.chips a')];
   const grupos = [...document.querySelectorAll<HTMLElement>('.grupo')];
-  const herramientas = document.querySelector<HTMLElement>('.herramientas')!;
   const buscador = document.querySelector<HTMLInputElement>('input[name="q"]')!;
   const ocultar = document.querySelector<HTMLInputElement>('input[name="ocultar"]')!;
   const estado = document.querySelector<HTMLElement>('.estado')!;
   const vacio = document.querySelector<HTMLElement>('.vacio')!;
   const filtros = document.querySelector<HTMLElement>('.filtros')!;
   const total = document.querySelectorAll('.grupo .card').length;
+  const suave: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
-  herramientas.hidden = false;
   const ids = new Set(grupos.map((g) => g.dataset.cat));
   let categoria = ids.has(location.hash.slice(1)) ? location.hash.slice(1) : 'todo';
 
@@ -114,9 +124,9 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
       categoria = chip.dataset.cat ?? 'todo';
       history.replaceState(null, '', categoria === 'todo' ? location.pathname : `#${categoria}`);
       aplicar();
-      chip.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      chip.scrollIntoView({ block: 'nearest', inline: 'center', behavior: suave });
       const arriba = filtros.getBoundingClientRect().top + scrollY;
-      if (scrollY > arriba) scrollTo({ top: arriba, behavior: 'smooth' });
+      if (scrollY > arriba) scrollTo({ top: arriba, behavior: suave });
     });
   }
 
@@ -137,6 +147,12 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
   const testigo = document.createElement('div');
   filtros.before(testigo);
   new IntersectionObserver(([e]) => filtros.classList.toggle('pegado', !e.isIntersecting)).observe(testigo);
+
+  // Lo que recibe foco con el teclado no queda escondido debajo de los filtros fijos.
+  const medir = () =>
+    document.documentElement.style.setProperty('--alto-fijo-arriba', getComputedStyle(filtros).position === 'sticky' ? `${filtros.offsetHeight + 16}px` : '24px');
+  medir();
+  new ResizeObserver(medir).observe(filtros);
 </script>
 
 <style>
@@ -160,6 +176,11 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     color: var(--ink-soft);
     padding-bottom: 12px;
     text-align: right;
+    display: grid;
+  }
+
+  .resumen span {
+    white-space: nowrap;
   }
 
   .filtros {
@@ -167,7 +188,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     top: 0;
     z-index: 20;
     background: var(--ground);
-    padding: 10px 0 12px;
+    padding: 6px 0 12px;
     transition: box-shadow 0.25s var(--ease);
   }
 
@@ -180,7 +201,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     gap: 8px;
     overflow-x: auto;
     margin-inline: calc(-1 * var(--gutter));
-    padding: 2px var(--gutter);
+    padding: 6px var(--gutter);
     scrollbar-width: none;
   }
 
@@ -214,10 +235,6 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     margin-top: 10px;
   }
 
-  .herramientas[hidden] {
-    display: none;
-  }
-
   .buscar {
     flex: 1 1 220px;
     display: flex;
@@ -226,13 +243,15 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     min-height: 46px;
     padding: 0 14px;
     background: var(--paper);
-    border: 1.5px solid var(--powder);
+    border: 1.5px solid #c98478;
     border-radius: 23px;
     transition: border-color 0.2s var(--ease);
   }
 
   .buscar:focus-within {
     border-color: var(--rose);
+    outline: 2px solid var(--rose);
+    outline-offset: 3px;
   }
 
   .buscar :global(svg) {
@@ -280,7 +299,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     height: 26px;
     border-radius: 13px;
     background: var(--powder);
-    border: 1.5px solid var(--blush);
+    border: 1.5px solid var(--rose);
     transition: background-color 0.2s var(--ease);
   }
 
@@ -316,7 +335,7 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
   }
 
   .estado {
-    min-height: 1.4em;
+    min-height: 0;
     font-size: 1rem;
     color: var(--ink-soft);
   }
@@ -371,6 +390,13 @@ import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.1;
+  }
+
+  /* Celular apaisado: los filtros fijos taparían media pantalla. */
+  @media (max-height: 500px) {
+    .filtros {
+      position: static;
+    }
   }
 
   @media (min-width: 640px) {

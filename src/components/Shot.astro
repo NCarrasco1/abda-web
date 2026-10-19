@@ -8,9 +8,11 @@ interface Props {
   eager?: boolean;
   /** Nombre de la transición entre páginas; solo una foto por producto en cada página. */
   transicion?: boolean;
+  /** Solo la imagen principal de la página (la que define la carga) pide prioridad alta. */
+  prioridad?: boolean;
 }
 
-const { producto: p, sizes = '(min-width: 900px) 260px, 45vw', eager = false, transicion = false } = Astro.props;
+const { producto: p, sizes = '(min-width: 900px) 260px, 45vw', eager = false, transicion = false, prioridad = false } = Astro.props;
 const img = foto(p.imagen);
 const cual = opcion(p);
 const alt = img.falta
@@ -28,7 +30,7 @@ const alt = img.falta
     width="800"
     height="800"
     loading={eager ? 'eager' : 'lazy'}
-    fetchpriority={eager ? 'high' : undefined}
+    fetchpriority={prioridad ? 'high' : undefined}
     decoding="async"
     style={transicion ? `view-transition-name: foto-${p.id}` : undefined}
   />

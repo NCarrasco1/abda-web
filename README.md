@@ -84,10 +84,12 @@ Borrá su bloque completo, desde `{` hasta `},`. Revisá que no quede una coma s
 
 El sitio se arma con `npm run build`, que genera la carpeta `dist/`. Sirve cualquiera de estos servicios gratuitos:
 
-- **Netlify** o **Cloudflare Pages:** conectás el repositorio, el comando de build es `npm run build` y la carpeta de salida es `dist`.
-- **Vercel:** detecta Astro solo.
+- **Netlify** (recomendado) o **Vercel:** conectás el repositorio; el comando de build es `npm run build` y la carpeta de salida es `dist`. Vercel detecta Astro solo.
+- **Cloudflare Pages:** igual que Netlify, pero además hay que cargar la variable de entorno `SITE_URL` con la dirección del sitio (por ejemplo `https://abda.pages.dev`).
 
 Cada vez que se sube un cambio a `productos.json`, el sitio se vuelve a publicar solo.
+
+**No subas a mano la carpeta `dist` armada en tu computadora** (por ejemplo, arrastrándola a Netlify): queda con la dirección `localhost` adentro y los links de WhatsApp y las vistas previas dejan de funcionar. Publicá siempre conectando el repositorio. Si el build avisa "Este build usa http://localhost:4321", falta configurar la dirección.
 
 **Dominio propio:** si compran un dominio (por ejemplo `abda.com.ar`), cargalo en la configuración del servicio como variable de entorno `SITE_URL` (`https://abda.com.ar`). Así los links que se mandan por WhatsApp y la vista previa al compartir usan esa dirección. Sin dominio propio, el sitio usa la dirección que da el servicio.
 

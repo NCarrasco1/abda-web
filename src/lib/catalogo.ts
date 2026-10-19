@@ -79,7 +79,7 @@ const existe = (rel: string) => fs.existsSync(path.join(publico, rel));
 
 export const foto = (rel: string) => {
   const limpio = rel.replace(/^\/+/, '');
-  if (!limpio || !existe(limpio)) return { src: '/img/logo.png', srcset: undefined, falta: true };
+  if (!limpio || !existe(limpio)) return { src: '/img/logo-240.webp', srcset: undefined, falta: true };
   const chica = limpio.replace(/(\.\w+)$/, '-400$1');
   return {
     src: `/${limpio}`,
@@ -87,3 +87,9 @@ export const foto = (rel: string) => {
     falta: false,
   };
 };
+
+/** WhatsApp no siempre muestra WebP al compartir: cada producto tiene su JPEG en public/og/. */
+export const imagenParaCompartir = (p: Producto) =>
+  existe(`og/${p.id}.jpg`)
+    ? { src: `/og/${p.id}.jpg`, ancho: 800, alto: 800 }
+    : { src: '/og.jpg', ancho: 1200, alto: 630 };

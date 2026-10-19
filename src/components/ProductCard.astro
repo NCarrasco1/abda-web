@@ -5,12 +5,14 @@ import { precio, nombreCompleto, opcion, urlProducto, type Producto } from '../l
 interface Props {
   producto: Producto;
   tilt?: number;
+  /** Inclinación de la cinta, para que no se repita igual en toda una grilla. */
+  cinta?: number;
   sizes?: string;
   eager?: boolean;
   transicion?: boolean;
 }
 
-const { producto: p, tilt = 0, sizes, eager, transicion } = Astro.props;
+const { producto: p, tilt = 0, cinta = 3, sizes, eager, transicion } = Astro.props;
 const valor = precio(p);
 const cual = p.variante ? null : opcion(p);
 ---
@@ -18,7 +20,7 @@ const cual = p.variante ? null : opcion(p);
 <a
   class="card"
   href={urlProducto(p)}
-  style={`--tilt: ${tilt}deg`}
+  style={`--tilt: ${tilt}deg; --tape-tilt: ${cinta}deg`}
   data-nombre={`${nombreCompleto(p)} ${p.categoria}`.toLowerCase()}
   data-stock={valor ? 'si' : 'no'}
 >

@@ -13,7 +13,7 @@ import {
   opcion,
   urlProducto,
   waProducto,
-  foto,
+  imagenParaCompartir,
   type Producto,
 } from '../../lib/catalogo';
 
@@ -30,15 +30,16 @@ const whatsapp = waProducto(p, link);
 const otros = deCategoria(p.categoria)
   .filter((o) => o.id !== p.id && disponible(o))
   .slice(0, 4);
-const imagen = foto(p.imagen);
+const compartir = { ...imagenParaCompartir(p), alt: nombreCompleto(p) };
 
 const titulo = `${nombreCompleto(p)}${cual ? ` (${cual.toLowerCase()})` : ''} · ABDA`;
+const nombreConOpcion = `${nombreCompleto(p)}${cual ? ` (${cual.toLowerCase()})` : ''}`;
 const descripcion = valor
-  ? `${nombreCompleto(p)} a ${valor} en ABDA, Mendoza. Consultá por WhatsApp.`
-  : `${nombreCompleto(p)} en ABDA, Mendoza. Ahora sin stock: pedí que te avisemos cuando vuelva.`;
+  ? `${nombreConOpcion} a ${valor} en ABDA, Mendoza. Consultá por WhatsApp.`
+  : `${nombreConOpcion} en ABDA, Mendoza. Ahora sin stock: escribinos para saber cuándo vuelve.`;
 ---
 
-<Base title={titulo} description={descripcion} image={imagen.src} sinFlotante>
+<Base title={titulo} description={descripcion} image={compartir} flotante="escritorio">
   <div class="wrap">
     <a class="volver caps" href={`/catalogo/#${categoria.id}`}>
       <Icon name="back" />
@@ -48,12 +49,12 @@ const descripcion = valor
 
   <article class="detalle wrap">
     <div class="foto">
-      <Shot producto={p} eager transicion sizes="(min-width: 900px) 520px, 92vw" />
+      <Shot producto={p} eager prioridad transicion sizes="(min-width: 900px) 520px, (min-width: 720px) 45vw, 92vw" />
     </div>
 
     <div class="datos">
       <h1 class="caps">{nombreCompleto(p)}</h1>
-      {cual && <p class="cual">{cual}. Se distingue por la foto.</p>}
+      {cual && <p class="cual">Una de las {cual.split(' de ')[1]} opciones de {nombreCompleto(p)}: la de la foto.</p>}
       {
         valor ? (
           <p class="precio importe">{valor}</p>
@@ -72,8 +73,8 @@ const descripcion = valor
       <p class="nota">
         {
           valor
-            ? 'Se abre WhatsApp con el producto ya escrito. Coordinamos el pago y la entrega por ahí.'
-            : 'Te escribimos apenas vuelva a entrar.'
+            ? 'Se abre WhatsApp con el producto ya escrito. Por ahí te ayudamos con tu pedido y los medios de pago.'
+            : 'Se abre WhatsApp con el producto ya escrito, así te avisamos cuando vuelva.'
         }
       </p>
     </div>
@@ -191,6 +192,12 @@ const descripcion = valor
     padding-top: 72px;
   }
 
+  @media (min-width: 1000px) {
+    .detalle {
+      grid-template-columns: minmax(0, 520px) 1fr;
+    }
+  }
+
   .otros h2 {
     font-size: clamp(2rem, 8vw, 2.75rem);
     font-weight: 600;
@@ -204,10 +211,10 @@ const descripcion = valor
     gap: 40px 18px;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 720px) {
     .detalle {
-      grid-template-columns: minmax(0, 520px) 1fr;
-      gap: 64px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(28px, 5vw, 64px);
       align-items: center;
     }
 

@@ -35,7 +35,7 @@ const pasos = [
 >
   <section class="hero wrap" aria-labelledby="titulo">
     <div class="hero__texto">
-      <h1 id="titulo" class="titulo caps">Tu make favorito, <em>a un mensaje.</em></h1>
+      <h1 id="titulo" class="titulo caps"><span class="linea">Tu make favorito,</span> <em class="linea">a un mensaje.</em></h1>
       <p class="bajada">Elegí en el catálogo y pedilo por WhatsApp. Te ayudamos con todo 🩷</p>
     </div>
 
@@ -45,7 +45,7 @@ const pasos = [
         <img
           src="/img/portada.webp"
           srcset="/img/portada-600.webp 600w, /img/portada.webp 1000w"
-          sizes="(min-width: 900px) 320px, 58vw"
+          sizes="(min-width: 900px) 400px, (min-width: 640px) 290px, 56vw"
           width="1000"
           height="1310"
           alt="Lip oil Red Rose, gel de cejas y bálsamo labial City Girl entre flores"
@@ -55,12 +55,12 @@ const pasos = [
       <p class="script firma" aria-hidden="true">Catálogo</p>
       {primero && (
         <div class="pieza pieza--1">
-          <ProductCard producto={primero} tilt={4} eager sizes="(min-width: 900px) 180px, 34vw" />
+          <ProductCard producto={primero} tilt={4} eager sizes="(min-width: 900px) 230px, (min-width: 640px) 180px, 34vw" />
         </div>
       )}
       {segundo && (
         <div class="pieza pieza--2">
-          <ProductCard producto={segundo} tilt={-2} eager sizes="(min-width: 900px) 180px, 34vw" />
+          <ProductCard producto={segundo} tilt={-2} eager sizes="(min-width: 900px) 230px, (min-width: 640px) 180px, 34vw" />
         </div>
       )}
       {hueco && (
@@ -76,6 +76,22 @@ const pasos = [
       {categorias.map((c) => <a class="caps" href={`/catalogo/#${c.id}`}>{c.nombre}</a>)}
     </nav>
   </section>
+
+  {
+    resto.length > 0 && (
+      <section class="destacados wrap" aria-labelledby="t-destacados">
+        <h2 id="t-destacados" class="seccion caps">Destacados</h2>
+        <div class="grilla">
+          {resto.map((p, i) => (
+            <ProductCard producto={p} tilt={inclinaciones[i % inclinaciones.length]} transicion />
+          ))}
+        </div>
+        <a class="btn btn--ink ver-todo" href="/catalogo/">
+          Ver todo el catálogo
+        </a>
+      </section>
+    )
+  }
 
   <section class="categorias wrap" aria-labelledby="t-categorias">
     <h2 id="t-categorias" class="seccion caps">Categorías</h2>
@@ -112,22 +128,6 @@ const pasos = [
     </ul>
   </section>
 
-  {
-    resto.length > 0 && (
-      <section class="destacados wrap" aria-labelledby="t-destacados">
-        <h2 id="t-destacados" class="seccion caps">Destacados</h2>
-        <div class="grilla">
-          {resto.map((p, i) => (
-            <ProductCard producto={p} tilt={inclinaciones[i % inclinaciones.length]} transicion />
-          ))}
-        </div>
-        <a class="btn btn--ink ver-todo" href="/catalogo/">
-          Ver todo el catálogo
-        </a>
-      </section>
-    )
-  }
-
   <section id="como-comprar" class="guia" aria-labelledby="t-guia">
     <div class="wrap">
       <h2 id="t-guia" class="script guia__titulo">Guía de compra</h2>
@@ -161,8 +161,12 @@ const pasos = [
     text-wrap: balance;
   }
 
-  .titulo em {
+  .titulo .linea {
     display: block;
+    white-space: nowrap;
+  }
+
+  .titulo em {
     font-style: normal;
     color: var(--rose);
   }
@@ -434,11 +438,41 @@ const pasos = [
     line-height: 1.3;
   }
 
+  @media (min-width: 640px) and (max-width: 899px) {
+    .pared {
+      width: min(100%, 520px);
+      margin: 12px auto 8px;
+    }
 
+    .categorias ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 36px 28px;
+    }
+
+    .categorias li:last-child {
+      grid-column: 1 / -1;
+      width: calc(50% - 14px);
+      justify-self: center;
+    }
+
+    .grilla {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 48px 28px;
+    }
+
+    .ver-todo {
+      width: auto;
+    }
+
+    .guia ol {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px 28px;
+    }
+  }
   @media (min-width: 900px) {
     .hero {
       display: grid;
-      grid-template-columns: 1fr minmax(0, 560px);
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
       grid-template-areas:
         'texto pared'
         'atajos pared';
@@ -448,7 +482,7 @@ const pasos = [
     }
 
     .titulo {
-      max-width: 11ch;
+      font-size: clamp(2.75rem, 4.6vw, 4.1rem);
     }
 
     .hero__texto {
@@ -458,6 +492,8 @@ const pasos = [
 
     .pared {
       grid-area: pared;
+      width: min(100%, 680px);
+      justify-self: end;
       margin: 0;
     }
 

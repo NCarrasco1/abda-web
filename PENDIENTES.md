@@ -7,6 +7,8 @@ Lo que sigue son datos para confirmar. No se cargó nada de esto en `productos.j
 ## Posible error del catálogo
 
 - **`perfume-day-to-day-candy-3`** (página 16): en el catálogo dice "Perfume day to day candy", pero en la foto se lee **"Happy Summer"**. ¿Es otro aroma?
+- **`perfume-day-to-day-candy-2`** (página 15): en la foto se lee **"Smooth Almond"**, no "Candy".
+- **`rubor`** (página 3, sin stock): la foto muestra un rubor junto a una latita "Pocket Contour". ¿El producto es el rubor o el contorno?
 - **"Perfume Day to Day Candy" aparece 3 veces** (`perfume-day-to-day-candy`, `-2`, `-3`), las tres sin stock y con fotos distintas. ¿Son productos diferentes o hay que borrar alguna repetida?
 
 ## Variantes que se leen en las fotos
@@ -19,6 +21,7 @@ Mientras el campo `variante` esté vacío, el sitio los distingue solo por la fo
 | `fragrance-mist-2` | Powerful wink |
 | `fragrance-mist-3` | Sunset treat |
 | `perfume-day-to-day-aura` | Warm aura |
+| `perfume-day-to-day-velvet` | Velvet passion |
 | `perfume-day-to-day-honey` | Warm honey |
 | `perfume-day-to-day-candy` | Sweet candy |
 | `crema-corporal-500-ml` | Rose bliss |
@@ -33,6 +36,10 @@ Marcas que se ven en los envases: City Girl, TEI, Mely y Pink21. Por pedido del 
 - **Mensaje de WhatsApp:** al mensaje del brief se le suma el link al producto, para que ABDA vea exactamente qué foto eligió la clienta. Cuando hay productos repetidos se aclara cuál es (por ejemplo, "Lip oil · opción 2 de 5").
 - **Guía de compra:** se adaptó el paso 2 del catálogo ("Sacale captura") a "Tocá 'Consultar por WhatsApp' en el producto, o sacale captura 📸", y el paso 3 a "Mandanos el mensaje y lo vemos juntas 💌".
 - **Frase de la home:** "Tu make favorito, a un mensaje." Es nueva, no sale del catálogo: confirmarla con la dueña.
+
+- **Hueco "Sin stock" en la home:** la pared de la portada muestra el primer producto sin stock del JSON (hoy, Rubor) para que se entienda cómo se ve lo que falta. Cambia solo cuando cambia el stock.
+- **Nombres:** `productos.json` ya traía los nombres un poco corregidos respecto del PDF ("Sombra de ojos", "Piedra gua sha", "Bálsamo", "Mascarilla ojos y boca", etc.). Se mantuvieron.
+- **"Opción N de M":** se numera por el orden del JSON y cambia si se agregan o reordenan productos con el mismo nombre. Lo que identifica de verdad el producto en el mensaje de WhatsApp es el link. Cargar `variante` lo reemplaza.
 
 ## Datos sin confirmar
 
