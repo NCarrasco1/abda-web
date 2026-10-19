@@ -8,7 +8,7 @@ import barlow500 from '@fontsource/barlow-condensed/files/barlow-condensed-latin
 import barlow600 from '@fontsource/barlow-condensed/files/barlow-condensed-latin-600-normal.woff2?url';
 import script400 from '@fontsource/mrs-saint-delafield/files/mrs-saint-delafield-latin-400-normal.woff2?url';
 import Icon from '../components/Icon.astro';
-import { ANUNCIO, instagramUrl, marca, waGeneral, whatsappVisible } from '../lib/catalogo';
+import { ANUNCIO, instagramUrl, marca, ruta, waGeneral, whatsappVisible } from '../lib/catalogo';
 
 interface Props {
   title: string;
@@ -23,13 +23,13 @@ interface Props {
 const {
   title,
   description,
-  image = { src: '/og.jpg', ancho: 1200, alto: 630, alt: 'ABDA, Belleza consciente: catálogo de maquillaje' },
+  image = { src: ruta('og.jpg'), ancho: 1200, alto: 630, alt: 'ABDA, Belleza consciente: catálogo de maquillaje' },
   flotante = 'siempre',
   noindex = false,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image.src, Astro.site);
-const ruta = Astro.url.pathname;
+const actual = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -44,8 +44,8 @@ const ruta = Astro.url.pathname;
     <link rel="preload" href={barlow500} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={barlow600} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={script400} as="font" type="font/woff2" crossorigin />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href={ruta('favicon-32.png')} />
+    <link rel="apple-touch-icon" href={ruta('apple-touch-icon.png')} />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_AR" />
@@ -67,12 +67,12 @@ const ruta = Astro.url.pathname;
     <header>
       <p class="anuncio caps">{ANUNCIO}</p>
       <div class="cabecera wrap">
-        <a href="/" class="logo" aria-label="ABDA, inicio">
-          <img src="/img/logo-152.webp" alt="" width="76" height="76" />
+        <a href={ruta('/')} class="logo" aria-label="ABDA, inicio">
+          <img src={ruta('img/logo-152.webp')} alt="" width="76" height="76" />
         </a>
         <nav aria-label="Principal">
-          <a href="/catalogo/" class="caps" aria-current={ruta.startsWith('/catalogo') ? 'page' : undefined}>Catálogo</a>
-          <a href="/#como-comprar" class="caps">Cómo comprar</a>
+          <a href={ruta('catalogo/')} class="caps" aria-current={actual.includes('/catalogo/') ? 'page' : undefined}>Catálogo</a>
+          <a href={ruta('#como-comprar')} class="caps">Cómo comprar</a>
         </nav>
       </div>
     </header>
@@ -83,7 +83,7 @@ const ruta = Astro.url.pathname;
 
     <footer class="pie">
       <div class="wrap pie__grid">
-        <img src="/img/logo-240.webp" alt="ABDA, Belleza consciente" width="104" height="104" loading="lazy" />
+        <img src={ruta('img/logo-240.webp')} alt="ABDA, Belleza consciente" width="104" height="104" loading="lazy" />
         <p class="gracias">
           Gracias por acompañar este pequeño emprendimiento que se hace con tanto amor 🫶🏻 Cada compra, mensaje y
           recomendación ayuda a que ABDA siga creciendo 🩷

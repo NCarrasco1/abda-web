@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { ruta } from '../lib/catalogo';
 ---
 
 <Base title="No encontramos esta página · ABDA" description="La página que buscás no existe. Volvé al catálogo de ABDA." noindex>
@@ -10,7 +11,7 @@ import Base from '../layouts/Base.astro';
     </div>
     <h1 class="caps">Esta página no existe</h1>
     <p>Puede que el producto ya no esté en el catálogo, o que el link tenga un error.</p>
-    <a class="btn btn--ink" href="/catalogo/">Ir al catálogo</a>
+    <a class="btn btn--ink" href={ruta('catalogo/')}>Ir al catálogo</a>
   </section>
 </Base>
 

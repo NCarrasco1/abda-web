@@ -82,21 +82,19 @@ Borrá su bloque completo, desde `{` hasta `},`. Revisá que no quede una coma s
 
 ## Publicar el sitio
 
-El sitio se arma con `npm run build`, que genera la carpeta `dist/`. Sirve cualquiera de estos servicios gratuitos:
+El sitio está publicado en **GitHub Pages**: <https://ncarrasco1.github.io/abda-web/>
 
-- **Netlify** (recomendado) o **Vercel:** conectás el repositorio; el comando de build es `npm run build` y la carpeta de salida es `dist`. Vercel detecta Astro solo.
-- **Cloudflare Pages:** igual que Netlify, pero además hay que cargar la variable de entorno `SITE_URL` con la dirección del sitio (por ejemplo `https://abda.pages.dev`).
+Cada vez que se sube un cambio a la rama `main` del repositorio <https://github.com/NCarrasco1/abda-web>, el workflow `.github/workflows/deploy.yml` arma el sitio y lo publica solo, en uno o dos minutos. El progreso se ve en la pestaña **Actions** del repositorio.
 
-Cada vez que se sube un cambio a `productos.json`, el sitio se vuelve a publicar solo.
+La forma más simple de cambiar un precio sin instalar nada: abrí `productos.json` en GitHub, tocá el lápiz (Edit), hacé el cambio y apretá **Commit changes**. El sitio se actualiza solo.
 
-**No subas a mano la carpeta `dist` armada en tu computadora** (por ejemplo, arrastrándola a Netlify): queda con la dirección `localhost` adentro y los links de WhatsApp y las vistas previas dejan de funcionar. Publicá siempre conectando el repositorio. Si el build avisa "Este build usa http://localhost:4321", falta configurar la dirección.
-
-**Dominio propio:** si compran un dominio (por ejemplo `abda.com.ar`), cargalo en la configuración del servicio como variable de entorno `SITE_URL` (`https://abda.com.ar`). Así los links que se mandan por WhatsApp y la vista previa al compartir usan esa dirección. Sin dominio propio, el sitio usa la dirección que da el servicio.
+**Dominio propio:** si compran un dominio (por ejemplo `abda.com.ar`), hay que cargarlo en GitHub (Settings → Pages → Custom domain) y cambiar en `astro.config.mjs` la línea `site` por `https://abda.com.ar` y borrar la línea `base`. Así los links de WhatsApp y las vistas previas usan la dirección nueva.
 
 ## Para quien programe
 
 - Astro 5, sitio 100 % estático. Sin backend ni base de datos.
-- `npm install`, luego `npm run dev` (en `localhost:4321`) o `npm run build`.
+- `npm install`, luego `npm run dev` (en `localhost:4321/abda-web/`) o `npm run build`.
+- El sitio vive bajo `base: '/abda-web'`. Todo link interno o imagen pasa por `ruta()` de `src/lib/catalogo.ts`; no escribas rutas que empiecen con `/` a mano.
 - Datos: `productos.json`, leído en `src/lib/catalogo.ts`. Ningún componente tiene productos escritos a mano.
 - Las fuentes Barlow Condensed y Mrs Saint Delafield se sirven desde el propio sitio (`@fontsource`), con `font-display: swap`.
 - Las fotos se sacaron del PDF del catálogo; el origen de cada una está embebido en el archivo. Ver `PENDIENTES.md`.

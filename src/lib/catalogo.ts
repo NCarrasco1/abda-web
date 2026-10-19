@@ -9,6 +9,10 @@ export const marca = data.marca;
 export const categorias: Categoria[] = data.categorias;
 export const productos: Producto[] = data.productos;
 
+// El sitio puede vivir en una subcarpeta (GitHub Pages: /abda-web/). Todo link interno pasa por acá.
+const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
+export const ruta = (camino: string) => `${BASE}/${camino.replace(/^\/+/, '')}`;
+
 export const ANUNCIO = 'Pedidos y consultas por WhatsApp · Mendoza';
 export const instagramUrl = `https://www.instagram.com/${marca.instagram}/`;
 export const whatsappVisible = '+54 9 2634 76-3965';
@@ -56,7 +60,7 @@ export const desde = (id: string) => {
 
 export const destacados = () => productos.filter((p) => p.destacado && disponible(p));
 
-export const urlProducto = (p: Producto) => `/producto/${p.id}/`;
+export const urlProducto = (p: Producto) => ruta(`producto/${p.id}/`);
 
 const whatsapp = (texto: string) => `https://wa.me/${marca.whatsapp}?text=${encodeURIComponent(texto)}`;
 
@@ -79,11 +83,11 @@ const existe = (rel: string) => fs.existsSync(path.join(publico, rel));
 
 export const foto = (rel: string) => {
   const limpio = rel.replace(/^\/+/, '');
-  if (!limpio || !existe(limpio)) return { src: '/img/logo-240.webp', srcset: undefined, falta: true };
+  if (!limpio || !existe(limpio)) return { src: ruta('img/logo-240.webp'), srcset: undefined, falta: true };
   const chica = limpio.replace(/(\.\w+)$/, '-400$1');
   return {
-    src: `/${limpio}`,
-    srcset: existe(chica) ? `/${chica} 400w, /${limpio} 800w` : undefined,
+    src: ruta(limpio),
+    srcset: existe(chica) ? `${ruta(chica)} 400w, ${ruta(limpio)} 800w` : undefined,
     falta: false,
   };
 };
@@ -91,5 +95,5 @@ export const foto = (rel: string) => {
 /** WhatsApp no siempre muestra WebP al compartir: cada producto tiene su JPEG en public/og/. */
 export const imagenParaCompartir = (p: Producto) =>
   existe(`og/${p.id}.jpg`)
-    ? { src: `/og/${p.id}.jpg`, ancho: 800, alto: 800 }
-    : { src: '/og.jpg', ancho: 1200, alto: 630 };
+    ? { src: ruta(`og/${p.id}.jpg`), ancho: 800, alto: 800 }
+    : { src: ruta('og.jpg'), ancho: 1200, alto: 630 };

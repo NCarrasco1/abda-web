@@ -14,6 +14,7 @@ import {
   urlProducto,
   waProducto,
   imagenParaCompartir,
+  ruta,
   type Producto,
 } from '../../lib/catalogo';
 
@@ -41,7 +42,7 @@ const descripcion = valor
 
 <Base title={titulo} description={descripcion} image={compartir} flotante="escritorio">
   <div class="wrap">
-    <a class="volver caps" href={`/catalogo/#${categoria.id}`}>
+    <a class="volver caps" href={ruta(`catalogo/#${categoria.id}`)}>
       <Icon name="back" />
       Catálogo · {categoria.nombre}
     </a>
