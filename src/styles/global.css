@@ -1,0 +1,181 @@
+:root {
+  --ground: #fbebea;
+  --powder: #f2d2cd;
+  --blush: #dd8e80;
+  --rose: #9a4a40;
+  --rose-deep: #7f3b33;
+  --ink: #3a2422;
+  --ink-soft: #6b4743;
+  --paper: #ffffff;
+
+  --sans: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --script: 'Mrs Saint Delafield', cursive;
+
+  --gutter: 16px;
+  --max: 1120px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-photo: 0 10px 22px -8px rgb(58 36 34 / 0.35);
+  --tape: repeating-linear-gradient(90deg, rgb(221 142 128 / 0.55) 0 6px, rgb(242 210 205 / 0.75) 6px 12px);
+
+  color-scheme: light;
+  accent-color: var(--rose);
+  scrollbar-color: var(--blush) var(--ground);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 96px;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  caret-color: var(--rose);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+::selection {
+  background: var(--rose);
+  color: var(--ground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+.caps {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.script {
+  font-family: var(--script);
+  font-weight: 400;
+  color: var(--rose);
+  line-height: 1;
+}
+
+.precio {
+  font-weight: 600;
+  color: var(--rose);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Cinta washi: el mismo trozo marca fotos, pasos y estados en todo el sitio. */
+.tape {
+  position: absolute;
+  z-index: 2;
+  width: 46%;
+  max-width: 96px;
+  height: 22px;
+  left: 50%;
+  top: -11px;
+  translate: -50% 0;
+  rotate: var(--tape-tilt, 3deg);
+  background: var(--tape);
+  box-shadow: 0 1px 2px rgb(58 36 34 / 0.12);
+  transition: translate 0.25s var(--ease), rotate 0.25s var(--ease), opacity 0.25s var(--ease);
+  pointer-events: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 26px;
+  border-radius: 27px;
+  border: 0;
+  background: var(--rose);
+  color: #fff;
+  font: 600 1.25rem/1 var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 8px 18px -6px rgb(154 74 64 / 0.6);
+  transition: background-color 0.2s var(--ease), translate 0.2s var(--ease);
+}
+
+.btn:hover {
+  background: var(--rose-deep);
+}
+
+.btn:active {
+  translate: 0 1px;
+}
+
+.btn svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.btn--ink {
+  background: var(--ink);
+  box-shadow: 0 8px 18px -6px rgb(58 36 34 / 0.55);
+}
+
+.btn--ink:hover {
+  background: #24130f;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+}

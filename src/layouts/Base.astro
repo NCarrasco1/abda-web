@@ -1,0 +1,242 @@
+---
+import '@fontsource/barlow-condensed/300.css';
+import '@fontsource/barlow-condensed/500.css';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/mrs-saint-delafield/400.css';
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { ANUNCIO, instagramUrl, marca, waGeneral, whatsappVisible } from '../lib/catalogo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Imagen para la vista previa al compartir, relativa a public/. */
+  image?: string;
+  /** El detalle de producto tiene su propio botón de WhatsApp fijo. */
+  sinFlotante?: boolean;
+}
+
+const { title, description, image = '/og.jpg', sinFlotante = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const ruta = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#fbebea" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="ABDA · Belleza consciente" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <p class="anuncio caps">{ANUNCIO}</p>
+
+    <header class="cabecera wrap">
+      <a href="/" class="logo" aria-label="ABDA, inicio">
+        <img src="/img/logo.png" alt="" width="76" height="76" />
+      </a>
+      <nav aria-label="Principal">
+        <a href="/catalogo/" class="caps" aria-current={ruta.startsWith('/catalogo') ? 'page' : undefined}>Catálogo</a>
+        <a href="/#como-comprar" class="caps">Cómo comprar</a>
+      </nav>
+    </header>
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <footer class="pie">
+      <div class="wrap pie__grid">
+        <img src="/img/logo.png" alt="ABDA, Belleza consciente" width="120" height="120" loading="lazy" />
+        <p class="gracias">
+          Gracias por acompañar este pequeño emprendimiento que se hace con tanto amor 🫶🏻 Cada compra, mensaje y
+          recomendación ayuda a que ABDA siga creciendo 🩷
+        </p>
+        <ul class="contacto">
+          <li>
+            <a href={instagramUrl} rel="noopener"><Icon name="instagram" />@{marca.instagram}</a>
+          </li>
+          <li>
+            <a href={waGeneral} rel="noopener"><Icon name="whatsapp" />{whatsappVisible}</a>
+          </li>
+          <li><span><Icon name="pin" />Mendoza, Argentina</span></li>
+        </ul>
+      </div>
+    </footer>
+
+    {
+      !sinFlotante && (
+        <a class="btn flotante" href={waGeneral} rel="noopener">
+          <Icon name="whatsapp" />
+          <span>Escribinos por WhatsApp</span>
+        </a>
+      )
+    }
+  </body>
+</html>
+
+<style>
+  .saltar {
+    position: absolute;
+    left: 8px;
+    top: -60px;
+    z-index: 50;
+    padding: 10px 14px;
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .saltar:focus {
+    top: 8px;
+  }
+
+  .anuncio {
+    background: var(--rose);
+    color: #fff4f2;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-align: center;
+    padding: 8px var(--gutter);
+  }
+
+  .cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 2px;
+  }
+
+  .logo {
+    margin-left: -8px;
+    border-radius: 50%;
+  }
+
+  .logo img {
+    width: 76px;
+    height: 76px;
+  }
+
+  nav {
+    display: flex;
+    gap: 4px;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 8px;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--rose);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+
+  main {
+    padding-bottom: 32px;
+  }
+
+  .pie {
+    background: var(--powder);
+    padding: 48px 0 calc(110px + env(safe-area-inset-bottom));
+  }
+
+  .pie__grid {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+
+  .pie__grid img {
+    width: 104px;
+    height: 104px;
+  }
+
+  .gracias {
+    font-size: 1.375rem;
+    font-weight: 300;
+    line-height: 1.4;
+    max-width: 34ch;
+  }
+
+  .contacto {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .contacto a,
+  .contacto span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 1.1875rem;
+    font-weight: 500;
+  }
+
+  .contacto a {
+    text-decoration: none;
+  }
+
+  .contacto a:hover {
+    text-decoration: underline;
+  }
+
+  .contacto :global(svg) {
+    width: 22px;
+    height: 22px;
+    color: var(--rose-deep);
+  }
+
+  .flotante {
+    position: fixed;
+    z-index: 30;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 720px) {
+    .pie__grid {
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .pie {
+      padding-bottom: 56px;
+    }
+
+    .flotante {
+      left: auto;
+      right: 24px;
+      bottom: 24px;
+    }
+  }
+</style>

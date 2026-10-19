@@ -1,0 +1,396 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Icon from '../components/Icon.astro';
+import { categorias, deCategoria, productos, waGeneral } from '../lib/catalogo';
+---
+
+<Base
+  title="Catálogo · ABDA"
+  description={`Los ${productos.length} productos de ABDA con foto y precio: rostro, labios, ojos, varios y Victoria's Secret. Consultá por WhatsApp.`}
+>
+  <header class="encabezado wrap">
+    <h1 class="script">Catálogo</h1>
+    <p class="caps resumen">{productos.length} productos · {categorias.length} categorías</p>
+  </header>
+
+  <div class="filtros">
+    <div class="wrap">
+      <nav class="chips" aria-label="Categorías">
+        <a href="#todo" data-cat="todo" aria-current="true" class="caps">Todo</a>
+        {categorias.map((c) => <a href={`#${c.id}`} data-cat={c.id} class="caps">{c.nombre}</a>)}
+      </nav>
+      <div class="herramientas" hidden>
+        <label class="buscar">
+          <Icon name="search" />
+          <span class="visually-hidden">Buscar por nombre</span>
+          <input type="search" name="q" placeholder="Buscar: lip oil, rimel, gloss…" autocomplete="off" enterkeyhint="search" />
+        </label>
+        <label class="ocultar">
+          <input type="checkbox" name="ocultar" />
+          <span class="interruptor" aria-hidden="true"></span>
+          <span class="caps">Ocultar sin stock</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap listado">
+    <p class="estado" aria-live="polite"></p>
+
+    {
+      categorias.map((c) => {
+        const lista = deCategoria(c.id);
+        return (
+          <section id={c.id} class="grupo" data-cat={c.id} aria-labelledby={`t-${c.id}`}>
+            <h2 id={`t-${c.id}`} class="caps">
+              {c.nombre} <span>{lista.length}</span>
+            </h2>
+            <div class="grilla">
+              {lista.map((p) => (
+                <ProductCard producto={p} transicion sizes="(min-width: 1000px) 250px, (min-width: 640px) 30vw, 45vw" />
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+
+    <div class="vacio" hidden>
+      <p class="vacio__titulo caps">No encontramos “<span></span>”</p>
+      <p>Probá con otra palabra, o escribinos y te decimos si lo tenemos 🩷</p>
+      <a class="btn" href={waGeneral} rel="noopener"><Icon name="whatsapp" />Preguntar por WhatsApp</a>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const normalizar = (s: string) =>
+    s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+  const chips = [...document.querySelectorAll<HTMLAnchorElement>('.chips a')];
+  const grupos = [...document.querySelectorAll<HTMLElement>('.grupo')];
+  const herramientas = document.querySelector<HTMLElement>('.herramientas')!;
+  const buscador = document.querySelector<HTMLInputElement>('input[name="q"]')!;
+  const ocultar = document.querySelector<HTMLInputElement>('input[name="ocultar"]')!;
+  const estado = document.querySelector<HTMLElement>('.estado')!;
+  const vacio = document.querySelector<HTMLElement>('.vacio')!;
+  const filtros = document.querySelector<HTMLElement>('.filtros')!;
+  const total = document.querySelectorAll('.grupo .card').length;
+
+  herramientas.hidden = false;
+  const ids = new Set(grupos.map((g) => g.dataset.cat));
+  let categoria = ids.has(location.hash.slice(1)) ? location.hash.slice(1) : 'todo';
+
+  function aplicar() {
+    const q = normalizar(buscador.value);
+    let visibles = 0;
+
+    for (const grupo of grupos) {
+      const enCategoria = categoria === 'todo' || grupo.dataset.cat === categoria;
+      let enGrupo = 0;
+      for (const card of grupo.querySelectorAll<HTMLElement>('.card')) {
+        const coincide = !q || normalizar(card.dataset.nombre ?? '').includes(q);
+        const mostrar = enCategoria && coincide && !(ocultar.checked && card.dataset.stock === 'no');
+        card.hidden = !mostrar;
+        if (mostrar) enGrupo++;
+      }
+      grupo.hidden = enGrupo === 0;
+      visibles += enGrupo;
+    }
+
+    for (const chip of chips) {
+      chip.toggleAttribute('aria-current', chip.dataset.cat === categoria);
+    }
+
+    vacio.hidden = visibles > 0;
+    vacio.querySelector('span')!.textContent = buscador.value.trim();
+    estado.textContent = visibles === total ? '' : `${visibles} de ${total} productos`;
+  }
+
+  for (const chip of chips) {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      categoria = chip.dataset.cat ?? 'todo';
+      history.replaceState(null, '', categoria === 'todo' ? location.pathname : `#${categoria}`);
+      aplicar();
+      chip.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      const arriba = filtros.getBoundingClientRect().top + scrollY;
+      if (scrollY > arriba) scrollTo({ top: arriba, behavior: 'smooth' });
+    });
+  }
+
+  buscador.addEventListener('input', aplicar);
+  ocultar.addEventListener('change', aplicar);
+  addEventListener('hashchange', () => {
+    const id = location.hash.slice(1);
+    if (ids.has(id)) {
+      categoria = id;
+      aplicar();
+    }
+  });
+
+  aplicar();
+  if (categoria !== 'todo') filtros.scrollIntoView();
+
+  // Sombra bajo los filtros solo cuando quedan pegados arriba.
+  const testigo = document.createElement('div');
+  filtros.before(testigo);
+  new IntersectionObserver(([e]) => filtros.classList.toggle('pegado', !e.isIntersecting)).observe(testigo);
+</script>
+
+<style>
+  .encabezado {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 4px;
+  }
+
+  h1 {
+    font-size: clamp(4.5rem, 22vw, 7rem);
+    rotate: -4deg;
+    margin-left: -4px;
+  }
+
+  .resumen {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    padding-bottom: 12px;
+    text-align: right;
+  }
+
+  .filtros {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--ground);
+    padding: 10px 0 12px;
+    transition: box-shadow 0.25s var(--ease);
+  }
+
+  .filtros.pegado {
+    box-shadow: 0 10px 18px -14px rgb(58 36 34 / 0.45);
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 2px var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .chips a {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 15px;
+    background: var(--powder);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .chips a:hover {
+    background: #ecc2bb;
+  }
+
+  .chips a[aria-current] {
+    background: var(--rose);
+    color: #fff;
+  }
+
+  .herramientas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin-top: 10px;
+  }
+
+  .herramientas[hidden] {
+    display: none;
+  }
+
+  .buscar {
+    flex: 1 1 220px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 14px;
+    background: var(--paper);
+    border: 1.5px solid var(--powder);
+    border-radius: 23px;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .buscar:focus-within {
+    border-color: var(--rose);
+  }
+
+  .buscar :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--rose);
+    flex: none;
+  }
+
+  .buscar input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    font: 400 1.1875rem var(--sans);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .buscar input::placeholder {
+    color: var(--ink-soft);
+    opacity: 1;
+  }
+
+  .ocultar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .ocultar input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .interruptor {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--powder);
+    border: 1.5px solid var(--blush);
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .interruptor::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: 0 1px 3px rgb(58 36 34 / 0.3);
+    transition: translate 0.25s var(--ease);
+  }
+
+  .ocultar input:checked + .interruptor {
+    background: var(--rose);
+    border-color: var(--rose);
+  }
+
+  .ocultar input:checked + .interruptor::after {
+    translate: 18px 0;
+  }
+
+  .ocultar input:focus-visible + .interruptor {
+    outline: 2px solid var(--rose);
+    outline-offset: 3px;
+  }
+
+  .listado {
+    padding-top: 8px;
+  }
+
+  .estado {
+    min-height: 1.4em;
+    font-size: 1rem;
+    color: var(--ink-soft);
+  }
+
+  .grupo {
+    padding-top: 28px;
+    scroll-margin-top: 150px;
+  }
+
+  .grupo[hidden],
+  .grupo :global(.card[hidden]) {
+    display: none;
+  }
+
+  .grupo h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 26px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--powder);
+  }
+
+  .grupo h2 span {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--rose);
+  }
+
+  .grilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 16px;
+  }
+
+  .vacio {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    padding: 40px 0;
+    font-size: 1.25rem;
+  }
+
+  .vacio[hidden] {
+    display: none;
+  }
+
+  .vacio__titulo {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  @media (min-width: 640px) {
+    .grilla {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 44px 28px;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .grilla {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .herramientas {
+      flex-wrap: nowrap;
+    }
+
+    .buscar {
+      max-width: 420px;
+    }
+  }
+</style>

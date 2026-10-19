@@ -1,0 +1,94 @@
+---
+import Shot from './Shot.astro';
+import { precio, nombreCompleto, opcion, urlProducto, type Producto } from '../lib/catalogo';
+
+interface Props {
+  producto: Producto;
+  tilt?: number;
+  sizes?: string;
+  eager?: boolean;
+  transicion?: boolean;
+}
+
+const { producto: p, tilt = 0, sizes, eager, transicion } = Astro.props;
+const valor = precio(p);
+const cual = p.variante ? null : opcion(p);
+---
+
+<a
+  class="card"
+  href={urlProducto(p)}
+  style={`--tilt: ${tilt}deg`}
+  data-nombre={`${nombreCompleto(p)} ${p.categoria}`.toLowerCase()}
+  data-stock={valor ? 'si' : 'no'}
+>
+  <Shot producto={p} sizes={sizes} eager={eager} transicion={transicion} />
+  <span class="info">
+    <span class="nombre caps">{nombreCompleto(p)}</span>
+    {cual && <span class="cual">{cual}</span>}
+    {valor ? <span class="precio">{valor}</span> : <span class="agotado">Avisame cuando vuelva</span>}
+  </span>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .info {
+    display: grid;
+    gap: 1px;
+    padding-inline: 2px;
+    line-height: 1.25;
+  }
+
+  .nombre {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  .cual {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+
+  .precio {
+    font-size: 1.3rem;
+    margin-top: 2px;
+  }
+
+  .agotado {
+    font-size: 0.95rem;
+    color: var(--rose);
+    text-decoration: underline;
+    margin-top: 3px;
+  }
+
+  /* La foto se despega: la cinta se levanta y la foto se endereza. */
+  .card:hover :global(.shot),
+  .card:focus-visible :global(.shot) {
+    rotate: 0deg;
+    translate: 0 -4px;
+    box-shadow: 0 18px 30px -12px rgb(58 36 34 / 0.4);
+  }
+
+  .card:hover :global(.tape),
+  .card:focus-visible :global(.tape) {
+    translate: -50% -5px;
+    rotate: -7deg;
+  }
+
+  .card:active :global(.shot) {
+    rotate: 0deg;
+    translate: 0 -2px;
+  }
+
+  .card:focus-visible {
+    outline-offset: 6px;
+  }
+</style>

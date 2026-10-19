@@ -27,6 +27,13 @@ Mientras el campo `variante` esté vacío, el sitio los distingue solo por la fo
 
 Marcas que se ven en los envases: City Girl, TEI, Mely y Pink21. Por pedido del brief no se agregaron a los nombres.
 
+## Elecciones provisorias del sitio
+
+- **Destacados:** marqué 8 productos con `"destacado": true` como punto de partida: lip-oil, blush-liquido, base-bb-cream, gloss-tornasol, paleta-de-sombras, rimel-4, fragrance-mist y darling-vanilla-jazmine. La dueña puede cambiarlos (ver README).
+- **Mensaje de WhatsApp:** al mensaje del brief se le suma el link al producto, para que ABDA vea exactamente qué foto eligió la clienta. Cuando hay productos repetidos se aclara cuál es (por ejemplo, "Lip oil · opción 2 de 5").
+- **Guía de compra:** se adaptó el paso 2 del catálogo ("Sacale captura") a "Tocá 'Consultar por WhatsApp' en el producto, o sacale captura 📸", y el paso 3 a "Mandanos el mensaje y lo vemos juntas 💌".
+- **Frase de la home:** "Tu make favorito, a un mensaje." Es nueva, no sale del catálogo: confirmarla con la dueña.
+
 ## Datos sin confirmar
 
 - **Entrega:** zona, envíos, retiro y costos. El sitio no promete nada sobre esto hasta tenerlo confirmado.

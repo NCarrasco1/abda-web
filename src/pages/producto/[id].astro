@@ -1,0 +1,228 @@
+---
+import Base from '../../layouts/Base.astro';
+import Shot from '../../components/Shot.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Icon from '../../components/Icon.astro';
+import {
+  productos,
+  categoriaDe,
+  deCategoria,
+  disponible,
+  precio,
+  nombreCompleto,
+  opcion,
+  urlProducto,
+  waProducto,
+  foto,
+  type Producto,
+} from '../../lib/catalogo';
+
+export function getStaticPaths() {
+  return productos.map((producto) => ({ params: { id: producto.id }, props: { producto } }));
+}
+
+const { producto: p } = Astro.props as { producto: Producto };
+const categoria = categoriaDe(p);
+const valor = precio(p);
+const cual = p.variante ? null : opcion(p);
+const link = new URL(urlProducto(p), Astro.site).href;
+const whatsapp = waProducto(p, link);
+const otros = deCategoria(p.categoria)
+  .filter((o) => o.id !== p.id && disponible(o))
+  .slice(0, 4);
+const imagen = foto(p.imagen);
+
+const titulo = `${nombreCompleto(p)}${cual ? ` (${cual.toLowerCase()})` : ''} · ABDA`;
+const descripcion = valor
+  ? `${nombreCompleto(p)} a ${valor} en ABDA, Mendoza. Consultá por WhatsApp.`
+  : `${nombreCompleto(p)} en ABDA, Mendoza. Ahora sin stock: pedí que te avisemos cuando vuelva.`;
+---
+
+<Base title={titulo} description={descripcion} image={imagen.src} sinFlotante>
+  <div class="wrap">
+    <a class="volver caps" href={`/catalogo/#${categoria.id}`}>
+      <Icon name="back" />
+      Catálogo · {categoria.nombre}
+    </a>
+  </div>
+
+  <article class="detalle wrap">
+    <div class="foto">
+      <Shot producto={p} eager transicion sizes="(min-width: 900px) 520px, 92vw" />
+    </div>
+
+    <div class="datos">
+      <h1 class="caps">{nombreCompleto(p)}</h1>
+      {cual && <p class="cual">{cual}. Se distingue por la foto.</p>}
+      {
+        valor ? (
+          <p class="precio importe">{valor}</p>
+        ) : (
+          <p class="agotado caps">Sin stock por ahora</p>
+        )
+      }
+      {p.descripcion && <p class="descripcion">{p.descripcion}</p>}
+
+      <div class="accion">
+        <a class:list={['btn', { 'btn--ink': !valor }]} href={whatsapp} rel="noopener">
+          <Icon name="whatsapp" />
+          {valor ? 'Consultar por WhatsApp' : 'Avisame cuando vuelva'}
+        </a>
+      </div>
+      <p class="nota">
+        {
+          valor
+            ? 'Se abre WhatsApp con el producto ya escrito. Coordinamos el pago y la entrega por ahí.'
+            : 'Te escribimos apenas vuelva a entrar.'
+        }
+      </p>
+    </div>
+  </article>
+
+  {
+    otros.length > 0 && (
+      <section class="otros wrap" aria-labelledby="t-otros">
+        <h2 id="t-otros" class="caps">
+          Más de {categoria.nombre}
+        </h2>
+        <div class="grilla">
+          {otros.map((o, i) => (
+            <ProductCard producto={o} tilt={[-1.5, 1, 1.5, -1][i]} sizes="(min-width: 900px) 250px, 45vw" />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    margin-left: -6px;
+    padding-right: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink-soft);
+  }
+
+  .volver:hover {
+    color: var(--rose);
+  }
+
+  .volver :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .detalle {
+    display: grid;
+    gap: 32px;
+    padding-top: 22px;
+  }
+
+  /* En el detalle la foto ya está despegada: derecha y con la cinta levantada. */
+  .foto :global(.tape) {
+    translate: -50% -5px;
+    rotate: -6deg;
+  }
+
+  .datos h1 {
+    font-size: clamp(2.5rem, 11vw, 4rem);
+    font-weight: 600;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  .cual {
+    margin-top: 8px;
+    font-size: 1.125rem;
+    color: var(--ink-soft);
+  }
+
+  .importe {
+    margin-top: 14px;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .agotado {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 7px 12px 6px;
+    border: 1.5px dashed var(--rose);
+    color: var(--rose);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .descripcion {
+    margin-top: 18px;
+    max-width: 60ch;
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  /* En el celular el botón queda fijo abajo, siempre a mano. */
+  .accion {
+    position: fixed;
+    z-index: 30;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .accion .btn {
+    width: 100%;
+  }
+
+  .nota {
+    margin-top: 18px;
+    max-width: 40ch;
+    font-size: 1.0625rem;
+    color: var(--ink-soft);
+  }
+
+  .otros {
+    padding-top: 72px;
+  }
+
+  .otros h2 {
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 28px;
+  }
+
+  .grilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 18px;
+  }
+
+  @media (min-width: 900px) {
+    .detalle {
+      grid-template-columns: minmax(0, 520px) 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .accion {
+      position: static;
+      margin-top: 32px;
+    }
+
+    .accion .btn {
+      width: auto;
+    }
+
+    .grilla {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 48px 32px;
+    }
+  }
+</style>

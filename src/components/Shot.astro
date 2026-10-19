@@ -1,0 +1,89 @@
+---
+// Una foto de producto pegada con cinta. Sin stock, queda el contorno punteado y la foto apagada.
+import { foto, nombreCompleto, opcion, disponible, type Producto } from '../lib/catalogo';
+
+interface Props {
+  producto: Producto;
+  sizes?: string;
+  eager?: boolean;
+  /** Nombre de la transición entre páginas; solo una foto por producto en cada página. */
+  transicion?: boolean;
+}
+
+const { producto: p, sizes = '(min-width: 900px) 260px, 45vw', eager = false, transicion = false } = Astro.props;
+const img = foto(p.imagen);
+const cual = opcion(p);
+const alt = img.falta
+  ? `${nombreCompleto(p)}: foto pendiente`
+  : `${nombreCompleto(p)}${cual ? `, ${cual.toLowerCase()}` : ''}`;
+---
+
+<figure class:list={['shot', { 'shot--agotado': !disponible(p), 'shot--falta': img.falta }]}>
+  <span class="tape"></span>
+  <img
+    src={img.src}
+    srcset={img.srcset}
+    sizes={img.srcset ? sizes : undefined}
+    alt={alt}
+    width="800"
+    height="800"
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
+    decoding="async"
+    style={transicion ? `view-transition-name: foto-${p.id}` : undefined}
+  />
+  {!disponible(p) && <figcaption class="sello caps">Sin stock</figcaption>}
+</figure>
+
+<style>
+  .shot {
+    position: relative;
+    background: var(--paper);
+    padding: 6px;
+    box-shadow: var(--shadow-photo);
+    rotate: var(--tilt, 0deg);
+    transition: rotate 0.3s var(--ease), translate 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+
+  .shot img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: var(--powder);
+  }
+
+  .shot--falta img {
+    object-fit: contain;
+    padding: 18%;
+  }
+
+  /* Sin stock: el lugar queda marcado, como el hueco de una foto despegada. */
+  .shot--agotado {
+    background: transparent;
+    box-shadow: none;
+    outline: 1.5px dashed var(--blush);
+    outline-offset: -1px;
+  }
+
+  .shot--agotado img {
+    opacity: 0.42;
+    filter: grayscale(0.55);
+  }
+
+  .sello {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    rotate: -4deg;
+    padding: 6px 12px 5px;
+    background: var(--ground);
+    border: 1.5px solid var(--rose);
+    color: var(--rose);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+</style>

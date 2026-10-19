@@ -1,0 +1,512 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import {
+  categorias,
+  deCategoria,
+  desde,
+  destacados,
+  disponible,
+  productos,
+  urlProducto,
+  nombreCompleto,
+  foto,
+} from '../lib/catalogo';
+
+const elegidos = destacados();
+const [primero, segundo] = elegidos;
+const resto = elegidos.slice(2);
+// El hueco de la pared es un producto real sin stock: muestra cómo se ve lo que falta.
+const hueco = productos.find((p) => !disponible(p));
+
+const inclinaciones = [-2, 1.5, 1, -1.5, -1, 2];
+
+const pasos = [
+  'Elegí tus productos favoritos 🩷',
+  'Tocá “Consultar por WhatsApp” en el producto, o sacale captura 📸',
+  'Mandanos el mensaje y lo vemos juntas 💌',
+  'Te ayudamos con tu pedido y los medios de pago 💰',
+];
+---
+
+<Base
+  title="ABDA · Maquillaje y belleza en Mendoza"
+  description="Catálogo de ABDA: maquillaje, labios, ojos, perfumes y Victoria's Secret en Mendoza. Elegí lo que te guste y pedilo por WhatsApp."
+>
+  <section class="hero wrap" aria-labelledby="titulo">
+    <div class="hero__texto">
+      <h1 id="titulo" class="titulo caps">Tu make favorito, <em>a un mensaje.</em></h1>
+      <p class="bajada">Elegí en el catálogo y pedilo por WhatsApp. Te ayudamos con todo 🩷</p>
+    </div>
+
+    <div class="pared">
+      <figure class="portada">
+        <span class="tape" style="--tape-tilt: 4deg"></span>
+        <img
+          src="/img/portada.webp"
+          srcset="/img/portada-600.webp 600w, /img/portada.webp 1000w"
+          sizes="(min-width: 900px) 320px, 58vw"
+          width="1000"
+          height="1310"
+          alt="Lip oil Red Rose, gel de cejas y bálsamo labial City Girl entre flores"
+          fetchpriority="high"
+        />
+      </figure>
+      <p class="script firma" aria-hidden="true">Catálogo</p>
+      {primero && (
+        <div class="pieza pieza--1">
+          <ProductCard producto={primero} tilt={4} eager sizes="(min-width: 900px) 180px, 34vw" />
+        </div>
+      )}
+      {segundo && (
+        <div class="pieza pieza--2">
+          <ProductCard producto={segundo} tilt={-2} eager sizes="(min-width: 900px) 180px, 34vw" />
+        </div>
+      )}
+      {hueco && (
+        <a class="hueco" href={urlProducto(hueco)}>
+          <span class="tape" style="--tape-tilt: -5deg"></span>
+          <span class="caps hueco__nombre">{nombreCompleto(hueco)}</span>
+          <span class="caps hueco__estado">Sin stock</span>
+        </a>
+      )}
+    </div>
+
+    <nav class="atajos" aria-label="Categorías">
+      {categorias.map((c) => <a class="caps" href={`/catalogo/#${c.id}`}>{c.nombre}</a>)}
+    </nav>
+  </section>
+
+  <section class="categorias wrap" aria-labelledby="t-categorias">
+    <h2 id="t-categorias" class="seccion caps">Categorías</h2>
+    <ul>
+      {
+        categorias.map((c, i) => {
+          const banda = foto(`img/categorias/${c.id}.webp`);
+          const total = deCategoria(c.id).length;
+          const minimo = desde(c.id);
+          return (
+            <li style={`--tilt: ${i % 2 ? 1 : -1}deg`}>
+              <a href={`/catalogo/#${c.id}`}>
+                <span class="tape" />
+                <img
+                  src={banda.src}
+                  srcset={banda.falta ? undefined : `/img/categorias/${c.id}-800.webp 800w, /img/categorias/${c.id}.webp 1600w`}
+                  sizes="(min-width: 900px) 540px, 92vw"
+                  width="1600"
+                  height="372"
+                  alt=""
+                  loading="lazy"
+                />
+                <span class="etiqueta">
+                  <span class="caps etiqueta__nombre">{c.nombre}</span>
+                  <span class="etiqueta__dato">
+                    {total} productos{minimo && ` · desde ${minimo}`}
+                  </span>
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  {
+    resto.length > 0 && (
+      <section class="destacados wrap" aria-labelledby="t-destacados">
+        <h2 id="t-destacados" class="seccion caps">Destacados</h2>
+        <div class="grilla">
+          {resto.map((p, i) => (
+            <ProductCard producto={p} tilt={inclinaciones[i % inclinaciones.length]} transicion />
+          ))}
+        </div>
+        <a class="btn btn--ink ver-todo" href="/catalogo/">
+          Ver todo el catálogo
+        </a>
+      </section>
+    )
+  }
+
+  <section id="como-comprar" class="guia" aria-labelledby="t-guia">
+    <div class="wrap">
+      <h2 id="t-guia" class="script guia__titulo">Guía de compra</h2>
+      <ol>
+        {
+          pasos.map((texto, i) => (
+            <li style={`--tilt: ${[-1.5, 1, -0.5, 1.5][i]}deg`}>
+              <span class="tape" style={`--tape-tilt: ${[3, -4, 5, -2][i]}deg`} />
+              <span class="paso__numero" aria-hidden="true">
+                {i + 1}
+              </span>
+              <span class="paso__texto">{texto}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: 10px;
+  }
+
+  .titulo {
+    font-size: clamp(2.6rem, 11.8vw, 4.75rem);
+    line-height: 0.92;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .titulo em {
+    display: block;
+    font-style: normal;
+    color: var(--rose);
+  }
+
+  .bajada {
+    display: none;
+  }
+
+  /* La pared: cada pieza se ubica en proporción al ancho, como en el boceto de 390px. */
+  .pared {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 390 / 470;
+    margin: 6px calc(-1 * var(--gutter)) 0;
+  }
+
+  .portada {
+    position: absolute;
+    left: 9%;
+    top: 3.8%;
+    width: 55%;
+    height: 63.8%;
+    padding: 6px;
+    background: var(--paper);
+    box-shadow: var(--shadow-photo);
+    rotate: -3deg;
+  }
+
+  .portada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .firma {
+    position: absolute;
+    left: 3.6%;
+    top: 60%;
+    z-index: 3;
+    font-size: 21.5cqi;
+    rotate: -6deg;
+    pointer-events: none;
+  }
+
+  .pieza {
+    position: absolute;
+    z-index: 4;
+    width: 33.8%;
+  }
+
+  .pieza--1 {
+    right: 3.6%;
+    top: 7.2%;
+  }
+
+  .pieza--2 {
+    right: 5.1%;
+    top: 50.2%;
+  }
+
+  .pieza :global(.card) {
+    gap: 8px;
+  }
+
+  .pieza :global(.nombre) {
+    font-size: max(0.95rem, 4.4cqi);
+  }
+
+  .pieza :global(.precio) {
+    font-size: max(1.1rem, 5.1cqi);
+  }
+
+  .hueco {
+    position: absolute;
+    left: 31.8%;
+    top: 74.5%;
+    width: 23.6%;
+    aspect-ratio: 1;
+    rotate: 3deg;
+    display: grid;
+    place-content: center;
+    gap: 2px;
+    text-align: center;
+    border: 1.5px dashed var(--blush);
+    color: var(--rose);
+    text-decoration: none;
+    line-height: 1;
+    transition: rotate 0.3s var(--ease), background-color 0.3s var(--ease);
+  }
+
+  .hueco .tape {
+    width: 48%;
+    height: 14px;
+    top: -7px;
+  }
+
+  .hueco__nombre {
+    font-size: max(0.85rem, 3.6cqi);
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .hueco__estado {
+    font-size: max(0.8rem, 3.3cqi);
+    font-weight: 600;
+  }
+
+  .hueco:hover,
+  .hueco:focus-visible {
+    rotate: 0deg;
+    background: rgb(255 255 255 / 0.5);
+  }
+
+  .atajos {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 4px var(--gutter) 12px;
+    scrollbar-width: none;
+  }
+
+  .atajos a {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 15px;
+    background: var(--powder);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .atajos a:hover {
+    background: var(--rose);
+    color: #fff;
+  }
+
+  .seccion {
+    font-size: clamp(2.25rem, 9vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1;
+    margin: 0 0 28px;
+  }
+
+  .categorias {
+    padding-top: 72px;
+  }
+
+  .categorias ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 34px;
+  }
+
+  .categorias li {
+    rotate: var(--tilt);
+  }
+
+  .categorias a {
+    position: relative;
+    display: block;
+    padding: 6px 6px 0;
+    background: var(--paper);
+    box-shadow: var(--shadow-photo);
+    text-decoration: none;
+    transition: rotate 0.3s var(--ease), translate 0.3s var(--ease);
+  }
+
+  .categorias img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1600 / 372;
+    object-fit: cover;
+  }
+
+  .etiqueta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 6px 11px;
+  }
+
+  .etiqueta__nombre {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .etiqueta__dato {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+
+  .categorias a:hover,
+  .categorias a:focus-visible {
+    rotate: calc(var(--tilt) * -1);
+    translate: 0 -3px;
+  }
+
+  .categorias a:hover .tape,
+  .categorias a:focus-visible .tape {
+    translate: -50% -5px;
+  }
+
+  .destacados {
+    padding-top: 84px;
+  }
+
+  .grilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 18px;
+  }
+
+  .ver-todo {
+    margin-top: 44px;
+    width: 100%;
+  }
+
+  .guia {
+    margin-top: 96px;
+    padding: 56px 0 64px;
+    background: var(--powder);
+  }
+
+  .guia__titulo {
+    font-size: clamp(4rem, 19vw, 6rem);
+    margin-bottom: 24px;
+    rotate: -3deg;
+    color: var(--rose-deep);
+  }
+
+  .guia ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 30px;
+  }
+
+  .guia li {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 20px 20px;
+    background: var(--ground);
+    box-shadow: 0 8px 18px -10px rgb(58 36 34 / 0.35);
+    rotate: var(--tilt);
+  }
+
+  .paso__numero {
+    font-size: 3.25rem;
+    font-weight: 600;
+    line-height: 0.8;
+    color: var(--rose-deep);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .paso__texto {
+    font-size: 1.3rem;
+    line-height: 1.3;
+  }
+
+
+  @media (min-width: 900px) {
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr minmax(0, 560px);
+      grid-template-areas:
+        'texto pared'
+        'atajos pared';
+      align-items: center;
+      column-gap: 48px;
+      padding-top: 24px;
+    }
+
+    .titulo {
+      max-width: 11ch;
+    }
+
+    .hero__texto {
+      grid-area: texto;
+      align-self: end;
+    }
+
+    .pared {
+      grid-area: pared;
+      margin: 0;
+    }
+
+    .atajos {
+      grid-area: atajos;
+      align-self: start;
+      flex-wrap: wrap;
+      margin: 24px 0 0;
+      padding: 0;
+    }
+
+    .bajada {
+      display: block;
+      margin-top: 20px;
+      font-size: 1.5rem;
+      font-weight: 300;
+      max-width: 30ch;
+    }
+
+    .categorias ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 40px 36px;
+    }
+
+    .categorias li:last-child {
+      grid-column: 1 / -1;
+      width: calc(50% - 18px);
+      justify-self: center;
+    }
+
+    .grilla {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 56px 40px;
+    }
+
+    .ver-todo {
+      width: auto;
+    }
+
+    .guia ol {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .guia li {
+      grid-template-columns: 1fr;
+      align-content: start;
+      min-height: 210px;
+    }
+
+  }
+</style>
