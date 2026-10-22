@@ -2,14 +2,29 @@
 
 Las 92 fotos se sacaron de `Catálogo ABDA.pdf`. Cada una se asoció con su producto comparando, en el mismo orden que el catálogo, el nombre y el precio que tiene debajo. Coincidieron los 92 productos y todos los precios. Ninguna foto quedó con una asociación dudosa.
 
-Lo que sigue son datos para confirmar. No se cargó nada de esto en `productos.json`.
+La dueña contestó una primera tanda de preguntas en `abda.docx` (2026-10-20). Lo confirmado ya se cargó en `productos.json`; queda anotado acá para que quede el rastro.
 
-## Posible error del catálogo
+## Resuelto (cargado en `productos.json`)
 
-- **`perfume-day-to-day-candy-3`** (página 16): en el catálogo dice "Perfume day to day candy", pero en la foto se lee **"Happy Summer"**. ¿Es otro aroma?
-- **`perfume-day-to-day-candy-2`** (página 15): en la foto se lee **"Smooth Almond"**, no "Candy".
-- **`rubor`** (página 3, sin stock): la foto muestra un rubor junto a una latita "Pocket Contour". ¿El producto es el rubor o el contorno?
-- **"Perfume Day to Day Candy" aparece 3 veces** (`perfume-day-to-day-candy`, `-2`, `-3`), las tres sin stock y con fotos distintas. ¿Son productos diferentes o hay que borrar alguna repetida?
+- **Los tres "Perfume Day to Day Candy"** eran tres aromas distintos, confirmados por la dueña:
+  - `perfume-day-to-day-candy` → **Perfume Day to Day Sweet Candy**
+  - `perfume-day-to-day-candy-2` → **Perfume Day to Day Smooth Almond**
+  - `perfume-day-to-day-candy-3` → **Perfume Day to Day Happy Summer**
+- **`rubor`** (sin stock, la foto con la latita "Pocket Contour"): confirmado que el producto es el contorno, no el rubor. Renombrado a **Pocket Contour**.
+- **Destacados de la home:** a pedido de la dueña, sacamos `base-bb-cream` y `blush-liquido`, y pasamos `darling-vanilla-jazmine` (Victoria's Secret) al primer lugar, para que un body splash se vea apenas entra una clienta. Ella pidió "que se vean primero **algunos** body splash de Victoria's Secret" (plural) pero solo había uno ya destacado; si quiere sumar más de los otros siete (Romantic, Bare Vanilla, Amber Aperitif, Vanilla Intense, Aqua Kiss Shimmer, Pure Seduction Shimmer, Isla Hibiscus), que diga cuáles.
+- **Logo:** mandó el archivo en mejor calidad (1507×1507, con transparencia) adjunto al final de `abda.docx`. Se regeneraron `logo.png`, `logo-152.webp`, `logo-240.webp`, `favicon-32.png` y `apple-touch-icon.png` a partir de ese archivo. Sigue sin ser vectorial.
+
+## Confirmado, pendiente de redactar en el sitio
+
+- **Entrega:** "Envíos a zona este y puntos de encuentro, tiene costo y varía según la zona" (respuesta textual de la dueña). Falta decidir dónde y cómo decirlo en el sitio (¿guía de compra? ¿pie de página?) — no se agregó todavía ninguna frase para no inventar la redacción exacta.
+- **Medios de pago:** "Transferencia, efectivo y mercado pago" (respuesta textual). Mismo caso: falta decidir si reemplaza la frase genérica del paso 4 de la guía de compra ("Te ayudamos con tu pedido y los medios de pago 💰") o se agrega aparte.
+
+## Todavía sin contestar (quedaron con el casillero vacío en `abda.docx`)
+
+- **Variantes que se leen en las fotos** (sección 2 del documento): fragrance-mist (x3), perfume day to day aura/velvet/honey, crema corporal/paleta contorno/lip-oil. Ningún casillero "Está bien" quedó marcado ni se escribió una corrección. Sigue sin cargarse en `variante`.
+- **Frase de la home** ("Tu make favorito, a un mensaje."): ni "Me gusta" ni "Prefiero" quedaron marcados.
+- **Guía de compra adaptada:** tampoco se marcó el casillero.
+- **Descripciones de producto:** no escribió ninguna.
 
 ## Variantes que se leen en las fotos
 
@@ -23,7 +38,6 @@ Mientras el campo `variante` esté vacío, el sitio los distingue solo por la fo
 | `perfume-day-to-day-aura` | Warm aura |
 | `perfume-day-to-day-velvet` | Velvet passion |
 | `perfume-day-to-day-honey` | Warm honey |
-| `perfume-day-to-day-candy` | Sweet candy |
 | `crema-corporal-500-ml` | Rose bliss |
 | `paleta-contorno-2` | Contour kiss |
 | `lip-oil` | Red rose (en la foto de portada aparece el mismo lip oil) |
@@ -32,24 +46,18 @@ Marcas que se ven en los envases: City Girl, TEI, Mely y Pink21. Por pedido del 
 
 ## Elecciones provisorias del sitio
 
-- **Destacados:** marqué 8 productos con `"destacado": true` como punto de partida: lip-oil, blush-liquido, base-bb-cream, gloss-tornasol, paleta-de-sombras, rimel-4, fragrance-mist y darling-vanilla-jazmine. La dueña puede cambiarlos (ver README).
+- **Destacados:** quedaron 6, en este orden: darling-vanilla-jazmine, lip-oil, gloss-tornasol, rimel-4, paleta-de-sombras y fragrance-mist (ver "Resuelto" arriba). La dueña puede cambiarlos (ver README).
 - **Mensaje de WhatsApp:** al mensaje del brief se le suma el link al producto, para que ABDA vea exactamente qué foto eligió la clienta. Cuando hay productos repetidos se aclara cuál es (por ejemplo, "Lip oil · opción 2 de 5").
 - **Guía de compra:** se adaptó el paso 2 del catálogo ("Sacale captura") a "Tocá 'Consultar por WhatsApp' en el producto, o sacale captura 📸", y el paso 3 a "Mandanos el mensaje y lo vemos juntas 💌".
 - **Frase de la home:** "Tu make favorito, a un mensaje." Es nueva, no sale del catálogo: confirmarla con la dueña.
 
-- **Hueco "Sin stock" en la home:** la pared de la portada muestra el primer producto sin stock del JSON (hoy, Rubor) para que se entienda cómo se ve lo que falta. Cambia solo cuando cambia el stock.
+- **Hueco "Sin stock" en la home:** la pared de la portada muestra el primer producto sin stock del JSON (hoy, Pocket Contour) para que se entienda cómo se ve lo que falta. Cambia solo cuando cambia el stock.
 - **Nombres:** `productos.json` ya traía los nombres un poco corregidos respecto del PDF ("Sombra de ojos", "Piedra gua sha", "Bálsamo", "Mascarilla ojos y boca", etc.). Se mantuvieron.
 - **"Opción N de M":** se numera por el orden del JSON y cambia si se agregan o reordenan productos con el mismo nombre. Lo que identifica de verdad el producto en el mensaje de WhatsApp es el link. Cargar `variante` lo reemplaza.
-
-## Datos sin confirmar
-
-- **Entrega:** zona, envíos, retiro y costos. El sitio no promete nada sobre esto hasta tenerlo confirmado.
-- **Medios de pago:** el catálogo solo dice "Te ayudamos con tu pedido y los medios de pago".
-- **Descripciones:** están todas vacías, a propósito.
 
 ## Imágenes generadas
 
 - `public/img/productos/<id>.webp` (800 px) y `<id>-400.webp` (400 px), para `srcset`.
 - `public/img/categorias/<categoria>.webp` (1600 px) y `-800.webp`: la franja de foto que encabeza cada categoría en el catálogo.
 - `public/img/portada.webp`: la foto de la tapa del catálogo.
-- `public/img/logo.png`: el logo circular "ABDA · Belleza consciente", con fondo transparente, en 400×400. No hay versión vectorial: si existe, conviene conseguirla para el favicon y el logo en pantallas grandes.
+- `public/img/logo.png`: el logo circular "ABDA · Belleza consciente", con fondo transparente, en 400×400, reducido desde el archivo en mejor calidad que mandó la dueña (1507×1507). Sigue sin haber versión vectorial.
